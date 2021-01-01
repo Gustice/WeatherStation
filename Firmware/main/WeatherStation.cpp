@@ -204,6 +204,6 @@ void app_main()
         }
                 
         cycleStamp++;
-        vTaskDelay(4000 / portTICK_RATE_MS);
+        vTaskDelay(30000 / portTICK_RATE_MS);
     }
 }
