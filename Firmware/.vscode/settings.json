@@ -1,0 +1,13 @@
+{
+    "cmake.configureOnOpen": false,
+    "files.associations": {
+        "chrono": "cpp",
+        "random": "cpp",
+        "limits": "cpp",
+        "*.tcc": "c",
+        "cstring": "c",
+        "algorithm": "c",
+        "functional": "cpp",
+        "thread": "cpp"
+    }
+}

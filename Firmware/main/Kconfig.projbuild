@@ -1,0 +1,21 @@
+menu "Device Configuration"
+    config AP_MODE_WIFI_SSID
+        string "WiFi SSID"
+        default "SensNet"
+        help
+            SSID (network name) to generate a network in case no wifi parameters are given.
+
+    config AP_MODE__WIFI_PASSWORD
+        string "WiFi Password"
+        default "connectMe"
+        help
+            WiFi password (WPA or WPA2) for the Access-Point mode.
+            Password must be longer than 8 characters.
+
+    config DEFAULT_BROKER_URL
+        string "Broker URL"
+        default "mqtt://myStation.fritz.box"
+        help
+            Default URL of the broker to connect to
+endmenu
+

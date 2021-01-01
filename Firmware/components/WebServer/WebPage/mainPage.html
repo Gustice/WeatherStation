@@ -1,0 +1,104 @@
+<!doctype html>
+<meta charset="utf-8">
+
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>PowerCycler</title>	
+        <style>
+            /* h1 { background-color: green;
+                    color: white;
+            }
+            p { text-align: center; 
+                color: green;
+            } */
+            </style>
+        <script>
+            function onSubmit(command, form ){
+                const formData = new FormData(form).entries();
+                let jsonObject = {};
+
+                jsonObject["cmd"] = command;
+                for (const [key, value]  of formData) {
+                    jsonObject[key] = value;
+                }
+                console.log(JSON.stringify(jsonObject));
+
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", "setup", true);
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.send(JSON.stringify(jsonObject));
+                return false; //don't submit
+            }
+        </script>
+    </head>
+    <body>
+        <h1>Weather-Station</h1>
+        <p>This device is capable of sampling temperature and humidity in the placed room and transmit it to MQTT broker/server.</p>
+        
+        <h2>WiFi-Settings</h2>
+        <p>After configuration of the station the access point is switched off and the device will connect to your local wifi.
+            You can reset the configuration by pressing the device button during start up</p>
+        <form onsubmit='return onSubmit("wifiCfg", this)'>
+            <table>
+                <tr>
+                    <td>SSID</td>
+                    <td> <input type="text" name="ssid"></input> </td>
+                </tr>
+                <tr>
+                    <td>Password</td>
+                    <td> <input type="password" name="password"></input> </td>
+                </tr>
+            </table>
+            <input type="submit"><br><br>
+        </form>
+
+        <h2>Device-Settings</h2>
+        <p>Tag your device to get a better overview</p>
+        <form onsubmit='return onSubmit("locCfg", this)'>
+            <table>
+                <tr>
+                    <td>DeviceName</td>
+                    <td> <input type="text" name="name" value="MyStation"></input> </td>
+                </tr>
+                <tr>
+                    <td>DeviceLocation</td>
+                    <td> <input type="text" name="location" value="Anywhere in da house"></input> </td>
+                </tr>
+            </table>
+            <input type="submit"><br><br>
+        </form>
+
+        <h2>MQTT-Settings</h2>
+        <p>Protocol settings for cyclic telegrams. You can customize the topics in order to integrate this device in your home system</p>
+        <form onsubmit='return onSubmit("mqttCfg", this)'>
+            <table>
+                <tr>
+                    <td>MQTT-Broker</td>
+                    <td> <input type="url" name="broker" value="mqtt://myStation.fritz.box"></input> </td>
+                </tr>
+                <tr>
+                    <td>RootTopic</td>
+                    <td> <input type="text" name="rootTopic" value="Sensor/MyRoom/"></input> </td>
+                </tr>
+                <tr>
+                    <td>Temperature topic suffix</td>
+                    <td> <input type="text" name="tempTopic" value="Temp"></input> </td>
+                </tr>
+                <tr>
+                    <td>Humidity topic suffix</td>
+                    <td> <input type="text" name="humTopic" value="RelHum"></input> </td>
+                </tr>
+                <tr>
+                    <td>Door or Window topic suffix</td>
+                    <td> <input type="text" name="binTopic" value="Door"></input> </td>
+                </tr>
+            </table>
+            <input type="submit"><br><br>
+        </form>
+
+        
+    </body>
+</html>
+
+
