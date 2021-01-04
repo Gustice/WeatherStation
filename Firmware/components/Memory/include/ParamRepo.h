@@ -23,6 +23,14 @@ extern "C"
     extern const char *devCfgFile;
     extern const char *mqttCfgFile;
 
+    typedef struct factoryInfo_def
+    {
+        char SerialNumber[16]; // Something like SN:123ABC
+        char HwVersion[32]; // V 1.00.00
+        char DeviceType[32];
+        char SwVersion[12];
+    } factoryInfo_t;
+
     typedef struct wifiConfig_def
     {
         uint8_t ssid[32];
@@ -36,13 +44,6 @@ extern "C"
         char Location[128];
     } DeviceConfig_t;
 
-    typedef struct versionInfo_def
-    {
-        char HwVersion[12]; // V 1.00.00
-        char SwVersion[12];
-        char SerialNumber[12]; // Something like SN:123ABC
-    } VersionInfo_t;
-
     typedef struct MqttConfig_def
     {
         char BrokerUrl[256];
@@ -55,13 +56,14 @@ extern "C"
         } Topics;
     } MqttConfig_t;
 
-    void setupSpiFFs(void);
-    void unmountSpiFFs(void);
+    void Fs_SetupSpiFFs(void);
 
     esp_err_t Fs_CheckIfExists(const char *file);
     esp_err_t Fs_SaveEntry(const char *file, void *stream, size_t length);
     esp_err_t Fs_ReadEntry(const char *file, void *stream, size_t length);
     esp_err_t Fs_DeleteEntry(const char *file);
+
+    esp_err_t Fs_ReadFactoryConfiguration(factoryInfo_t * factorySet);
 
 #ifdef __cplusplus
 }

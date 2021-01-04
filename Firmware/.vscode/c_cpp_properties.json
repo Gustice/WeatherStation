@@ -18,7 +18,7 @@
                 "CONFIG_FREERTOS_HZ=100"
             ],
             // Path to compiler perhaps has to be adjusted
-            "compilerPath": "E:/Software/xtensa-lx106-elf_ESP8266/bin/xtensa-lx106-elf-g++.exe",
+            "compilerPath": "C:/espressif/tools/xtensa-lx106-elf/esp-2020r3-49-gd5524c1-8.4.0/xtensa-lx106-elf/bin/xtensa-lx106-elf-g++.exe",
             //"browse": { // Tag-Parser for Go-To-Definition-Function or tag-database. This is same as "includePath" if omitted
             "cStandard": "c11",
             "cppStandard": "c++17",

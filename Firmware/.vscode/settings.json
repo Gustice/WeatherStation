@@ -8,6 +8,9 @@
         "cstring": "c",
         "algorithm": "c",
         "functional": "cpp",
-        "thread": "cpp"
+        "thread": "cpp",
+        "cstdio": "cpp",
+        "fstream": "cpp",
+        "iostream": "cpp"
     }
 }

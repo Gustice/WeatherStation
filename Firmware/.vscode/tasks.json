@@ -81,6 +81,31 @@
                 }
             }
         },
+
+        { // Generate Data-Image
+            // You need mkspiffs compiled particularily for ESP8266 RTOS-Framework:
+                // clone https://github.com/igrr/mkspiffs
+                // compile with "make dist CPPFLAGS="-DSPIFFS_USE_MAGIC_LENGTH=0 -DSPIFFS_ALIGNED_OBJECT_INDEX_TABLES=1" BUILD_CONFIG_NAME=-Esp8266RtosSdk"
+                // Veryfiy executable with mkspiffs --version
+                // Move this executable to IDF_PATH and raname to mkspiffsEsp8266RtosSdkMl0.exe
+                // Note use "make CC=gcc CXX=g++ dist ..." if no ouptut is generated (perhaps this helps ...)
+                // Note "spiffsgen.py" doesn't work as it is adapted for IDF
+            "label": "Generate Data-Image",
+            "command": "mkspiffsEsp8266RtosSdkMl0.exe",  
+            "type": "shell",
+            "args": [
+                "-c ./DevConfig/", // Folder to pack
+                "-b 4096", // block size (must meet FW-Config)
+                "-p 256", // page size (must meet FW-Config)
+                "-s 0x70000", // See partition table for size    
+                "FactoryConfig.fs"
+            ],
+            "problemMatcher": []
+        },
+
+        //PS D:\Arbeitsordner\ESP8266\Projects\WeatherStation\Firmware> python esptool.py --port COM4 --baud 115200 write_flash -z 0x110000 DevConfig.ffs
+        // python esptool.py --port COM4 --baud 115200 read_flash 0x0 0x200000 ReadDevConfig.ffs
+
         { // Clean Project
             "label": "Clean Project",
             "command": "idf.py",

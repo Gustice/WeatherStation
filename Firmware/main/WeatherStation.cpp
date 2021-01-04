@@ -37,18 +37,20 @@
 #include "ParamRepo.h"
 
 static const char *TAG = "main";
-static const char * StdStationSsid = CONFIG_EXAMPLE_WIFI_SSID;
-static const char * StdStationPw = CONFIG_EXAMPLE_WIFI_PASSWORD;
+static const char * StdStationSsid = CONFIG_AP_MODE_WIFI_SSID;
+static const char * StdStationPw = CONFIG_AP_MODE__WIFI_PASSWORD;
+
+factoryInfo_t factoryCfg;
 
 WifiConfig_t wifiCfg;
 DeviceConfig_t devCfg;
-VersionInfo_t ver;
 MqttConfig_t mqttCfg;
 
 extern "C"
 { // This switch allows the ROS C-implementation to find this main
     void app_main(void);
 }
+
 
 static SemaphoreHandle_t xSemaphore = NULL;
 static void AlarmTask(void *pvParameters)
@@ -76,6 +78,7 @@ static void AlarmTask(void *pvParameters)
 
 void waitForConfigurationThenRestart(void)
 {
+    ESP_LOGW(TAG, "No WiFi-Device configuration. Waiting for valid configuration ...");
     WifiConfig_t stationCfg;
     memset(&stationCfg, 0, sizeof(WifiConfig_t));
     memcpy(stationCfg.ssid, StdStationSsid, strlen(StdStationSsid));
@@ -119,7 +122,11 @@ void app_main()
     ESP_ERROR_CHECK(nvs_flash_init());
     ESP_ERROR_CHECK(esp_netif_init());
     // ESP_ERROR_CHECK(esp_event_loop_create_default());
-    setupSpiFFs();
+    Fs_SetupSpiFFs();
+
+    Fs_ReadFactoryConfiguration(&factoryCfg);
+    ESP_LOGI(TAG, "Read Factory Config:\n\tSN: %s\n\tHW: %s\n\tDev: %s", 
+    factoryCfg.SerialNumber, factoryCfg.HwVersion, factoryCfg.DeviceType );
 
     InputPort rstConfig(GPIO_NUM_16); //D0
     if (rstConfig.ReadPort() == 0)

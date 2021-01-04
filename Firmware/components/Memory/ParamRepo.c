@@ -18,10 +18,12 @@
 #include <sys/stat.h>
 #include "esp_log.h"
 #include "esp_spiffs.h"
+#include "cJSON.h"
 
-const char *wifiCfgFile = "wifiConfigFile";
-const char *devCfgFile = "deviceConfigFile";
-const char *mqttCfgFile = "mqttConfigFile";
+
+const char *wifiCfgFile = "wifiConfigFile.bin";
+const char *devCfgFile = "deviceConfigFile.bin";
+const char *mqttCfgFile = "mqttConfigFile.bin";
 
 static const char *TAG = "SpiFFs";
 
@@ -29,11 +31,12 @@ static esp_vfs_spiffs_conf_t conf = {
     .base_path = "/spiffs",
     .partition_label = NULL,
     .max_files = 5,
-    .format_if_mount_failed = true};
+    .format_if_mount_failed = true
+    };
 
 static bool active = false;
 
-void setupSpiFFs(void)
+void Fs_SetupSpiFFs(void)
 {
     ESP_LOGI(TAG, "Initializing SPIFFS");
 
@@ -80,7 +83,7 @@ void unmountSpiFFs(void)
 char *GetFileName(char *file)
 {
     static char fileName[128];
-    sprintf(fileName, "/spiffs/%s.bin", file);
+    sprintf(fileName, "/spiffs/%s", file);
     return fileName;
 }
 
@@ -168,4 +171,35 @@ esp_err_t Fs_CheckIfExists(const char *file)
     }
 
     return ESP_FAIL;
+}
+
+esp_err_t Fs_ReadFactoryConfiguration(factoryInfo_t *factorySet)
+{
+    if (!active)
+        return ESP_FAIL;
+
+    FILE *f = fopen("/spiffs/FactoryInfo.json", "r");
+    if (f == NULL)
+    {
+        ESP_LOGE(TAG, "Failed to open Factory Configuration");
+        return ESP_FAIL;
+    }
+
+    char buf[512]; // Maximum 2 Pages // todo verify
+    memset(buf, 0, sizeof(buf));
+    size_t rs = fread(buf, 1, sizeof(buf), f);
+
+    ESP_LOGD(TAG, "ReadElements %d", rs);
+    ESP_LOGD(TAG, "Read Text %s", buf);
+
+    cJSON *root = cJSON_Parse(buf);
+    const char *SerialNumber = cJSON_GetObjectItem(root, "SerialNumber")->valuestring;
+    const char *HwVersion = cJSON_GetObjectItem(root, "HwVersion")->valuestring;
+    const char *DeviceType = cJSON_GetObjectItem(root, "DeviceType")->valuestring;
+    fclose(f);
+
+    strcpy((char *)factorySet->SerialNumber, SerialNumber);
+    strcpy((char *)factorySet->HwVersion, HwVersion);
+    strcpy((char *)factorySet->DeviceType, DeviceType);
+    return ESP_OK;
 }
