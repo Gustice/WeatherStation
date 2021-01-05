@@ -103,8 +103,22 @@
             "problemMatcher": []
         },
 
-        //PS D:\Arbeitsordner\ESP8266\Projects\WeatherStation\Firmware> python esptool.py --port COM4 --baud 115200 write_flash -z 0x110000 DevConfig.ffs
-        // python esptool.py --port COM4 --baud 115200 read_flash 0x0 0x200000 ReadDevConfig.ffs
+        { // Flash Data-Image
+            "label": "Flash Data-Image",
+            "command": "python.exe",
+            "type": "shell",
+            "args": [
+                "esptool.py",
+                "--port",
+                "COM${input:ComPortNum}",
+                "--baud", "115200",
+                "write_flash",
+                "-z", "0x110000", 
+                "FactoryConfig.fs"
+            ],
+            //"dependsOn": "Generate Data-Image",
+            "problemMatcher": []
+        },
 
         { // Clean Project
             "label": "Clean Project",
