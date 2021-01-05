@@ -18,7 +18,7 @@ extern "C"
 #include <esp_http_server.h>
 #include "ParamRepo.h"
 
-    void start_webserver(void);
+    void Web_StartWebserver(DeviceConfig_t * devCfg, MqttConfig_t * mqttCfg);
 #ifdef __cplusplus
 }
 #endif

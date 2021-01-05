@@ -25,6 +25,25 @@ const char *wifiCfgFile = "wifiConfigFile.bin";
 const char *devCfgFile = "deviceConfigFile.bin";
 const char *mqttCfgFile = "mqttConfigFile.bin";
 
+const DeviceConfig_t DefaultDeviceConfig = {
+    .DeviceName = "MyStation",
+    .Location = "in da house!"
+};
+
+const MqttConfig_t DefaultMqttConfig = {
+    .BrokerUrl = "mqtt://myStation.fritz.box",
+    .PublishTopics = {
+        .Root = "Sensor/MyRoom/",
+        .Temperature = "Temp",
+        .Humidity = "RelHum",
+        .Door = "Door",
+    },
+    .SubscribeTopics = {
+        .Signal = "Signal",
+        .Prompt = "Prompt",
+    }
+};
+
 static const char *TAG = "SpiFFs";
 
 static esp_vfs_spiffs_conf_t conf = {

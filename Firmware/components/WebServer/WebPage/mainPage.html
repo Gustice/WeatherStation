@@ -30,6 +30,28 @@
                 xhr.send(JSON.stringify(jsonObject));
                 return false; //don't submit
             }
+
+            window.onload = function() {
+                var xhr = new XMLHttpRequest();
+                xhr.onreadystatechange = function () {
+                if (this.readyState != 4) return;
+                if (this.status == 200) {
+                    var data = JSON.parse(this.responseText);
+                    console.log(data);
+                    document.getElementById("nameTxt").value = data.name;
+                    document.getElementById("locationTxt").value = data.location;
+                    document.getElementById("brokerTxt").value = data.broker;
+                    document.getElementById("rootTopicTxt").value = data.rootTopic;
+                    document.getElementById("tempTopicTxt").value = data.tempTopic;
+                    document.getElementById("humTopicTxt").value = data.humTopic;
+                    document.getElementById("binTopicTxt").value = data.doorTopic;
+                    document.getElementById("signalTopicTxt").value = data.signalTopic;
+                    document.getElementById("promptTopicTxt").value = data.promptTopic;
+                }
+                };
+                xhr.open('GET', "setup", true);
+                xhr.send();
+            }
         </script>
     </head>
     <body>
@@ -55,15 +77,15 @@
 
         <h2>Device-Settings</h2>
         <p>Tag your device to get a better overview</p>
-        <form onsubmit='return onSubmit("locCfg", this)'>
+        <form name="StationForm" onsubmit='return onSubmit("locCfg", this)'>
             <table>
                 <tr>
                     <td>DeviceName</td>
-                    <td> <input type="text" name="name" value="MyStation"></input> </td>
+                    <td> <input type="text" id="nameTxt" name="name" value="MyStation"></input> </td>
                 </tr>
                 <tr>
                     <td>DeviceLocation</td>
-                    <td> <input type="text" name="location" value="Anywhere in da house"></input> </td>
+                    <td> <input type="text" id="locationTxt" name="location" value="Anywhere in da house"></input> </td>
                 </tr>
             </table>
             <input type="submit"><br><br>
@@ -71,27 +93,36 @@
 
         <h2>MQTT-Settings</h2>
         <p>Protocol settings for cyclic telegrams. You can customize the topics in order to integrate this device in your home system</p>
-        <form onsubmit='return onSubmit("mqttCfg", this)'>
+        <form name="MqttForm" onsubmit='return onSubmit("mqttCfg", this)'>
             <table>
                 <tr>
                     <td>MQTT-Broker</td>
-                    <td> <input type="url" name="broker" value="mqtt://myStation.fritz.box"></input> </td>
+                    <td> <input type="url" id="brokerTxt" name="broker" value="mqtt://myStation.fritz.box"></input> </td>
                 </tr>
                 <tr>
                     <td>RootTopic</td>
-                    <td> <input type="text" name="rootTopic" value="Sensor/MyRoom/"></input> </td>
+                    <td> <input type="text" id="rootTopicTxt" name="rootTopic" value="Sensor/MyRoom/"></input> </td>
                 </tr>
                 <tr>
                     <td>Temperature topic suffix</td>
-                    <td> <input type="text" name="tempTopic" value="Temp"></input> </td>
+                    <td> <input type="text" id="tempTopicTxt" name="tempTopic" value="Temp"></input> </td>
                 </tr>
                 <tr>
                     <td>Humidity topic suffix</td>
-                    <td> <input type="text" name="humTopic" value="RelHum"></input> </td>
+                    <td> <input type="text" id="humTopicTxt" name="humTopic" value="RelHum"></input> </td>
                 </tr>
                 <tr>
                     <td>Door or Window topic suffix</td>
-                    <td> <input type="text" name="binTopic" value="Door"></input> </td>
+                    <td> <input type="text" id="binTopicTxt" name="binTopic" value="Door"></input> </td>
+                </tr>
+
+                <tr>
+                    <td>Signal topic</td>
+                    <td> <input type="text" id="signalTopicTxt" name="signalTopic" value="base/signal"></input> </td>
+                </tr>
+                <tr>
+                    <td>Prompt topic</td>
+                    <td> <input type="text" id="promptTopicTxt" name="promptTopic" value="base/prompt"></input> </td>
                 </tr>
             </table>
             <input type="submit"><br><br>

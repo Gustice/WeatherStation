@@ -14,6 +14,11 @@ class MockServer(BaseHTTPRequestHandler):
     def do_GET(self):
         if self.path == '/':
             self.path = '/mainPage.html' # redirect
+        if self.path == '/setup':
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json')
+            self.end_headers()
+            self.wfile.write('{name: "MyStation", location: "in da house!", broker: "mqtt://BaseServer.fritz.box", rootTopic: "Sensor/MyRoom/", tempTopic: "Temp"}'.encode(encoding='utf_8'))
         if re.match("/\w+$", self.path):
             self.path += ".html"
 

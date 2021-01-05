@@ -34,27 +34,34 @@ extern "C"
     typedef struct wifiConfig_def
     {
         uint8_t ssid[32];
-        /** @note Length >= 8 */
+        /** @note Length must be >= 8 */
         uint8_t password[64];
     } WifiConfig_t;
 
     typedef struct deviceConfig_def
     {
-        char DeviceName[64];
-        char Location[128];
+        char DeviceName[32];
+        char Location[64];
     } DeviceConfig_t;
 
     typedef struct MqttConfig_def
     {
-        char BrokerUrl[256];
+        char BrokerUrl[128];
         struct
         {
-            char Root[256];
-            char Temperature[64];
-            char Humidity[64];
-            char Door[64];
-        } Topics;
+            char Root[128];
+            char Temperature[32];
+            char Humidity[32];
+            char Door[32];
+        } PublishTopics;
+        struct {
+            char Signal[128];
+            char Prompt[128];
+        } SubscribeTopics;
     } MqttConfig_t;
+
+    extern const DeviceConfig_t DefaultDeviceConfig;
+    extern const MqttConfig_t DefaultMqttConfig;
 
     void Fs_SetupSpiFFs(void);
 

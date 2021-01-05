@@ -36,8 +36,6 @@
 
 static const char *TAG = "mqttDevice";
 
-static char *BeepTopic = "Alarm/Beep";
-
 static bool FreeToPublish = false;
 static SemaphoreHandle_t *_xSemaphore = NULL;
 static MqttConfig_t MqttConfig;
@@ -54,7 +52,7 @@ void publishBootUpMsg(void)
     cJSON_Delete(root);
 
     char topicBuf[320];
-    sprintf(topicBuf, "%s%s%s", "bootup/", MqttConfig.Topics.Root, "Device");
+    sprintf(topicBuf, "%s%s%s", "bootup/", MqttConfig.PublishTopics.Root, "Device");
 
     if (esp_mqtt_client_publish(_client, topicBuf, rendered, 0, 1, 0) == -1)
         ESP_LOGW(TAG, "Sending of 'AllData' failed");
@@ -70,13 +68,18 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event)
     case MQTT_EVENT_CONNECTED:
         FreeToPublish = true;
         ESP_LOGI(TAG, "MQTT_EVENT_CONNECTED");
-        msgId = esp_mqtt_client_subscribe(client, BeepTopic, 0);
+        msgId = esp_mqtt_client_subscribe(client, MqttConfig.SubscribeTopics.Signal, 0);
         if (msgId != -1)
             ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msgId);
 
-        ESP_LOGI(TAG, "Publishing Temperature on %s%s", MqttConfig.Topics.Root, MqttConfig.Topics.Temperature);
-        ESP_LOGI(TAG, "Publishing Humidity on %s%s", MqttConfig.Topics.Root, MqttConfig.Topics.Temperature);
-        ESP_LOGI(TAG, "Publishing Door on %s%s", MqttConfig.Topics.Root, MqttConfig.Topics.Door);
+        msgId = esp_mqtt_client_subscribe(client, MqttConfig.SubscribeTopics.Prompt, 0);
+        if (msgId != -1)
+            ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msgId);
+
+
+        ESP_LOGI(TAG, "Publishing Temperature on %s%s", MqttConfig.PublishTopics.Root, MqttConfig.PublishTopics.Temperature);
+        ESP_LOGI(TAG, "Publishing Humidity on %s%s", MqttConfig.PublishTopics.Root, MqttConfig.PublishTopics.Temperature);
+        ESP_LOGI(TAG, "Publishing Door on %s%s", MqttConfig.PublishTopics.Root, MqttConfig.PublishTopics.Door);
 
         // msg_id = esp_mqtt_client_unsubscribe(client, "/Alarm/Siren");
         // ESP_LOGI(TAG, "sent unsubscribe successful, msg_id=%d", msg_id);
@@ -100,10 +103,8 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event)
         ESP_LOGI(TAG, "MQTT_EVENT_DATA");
         printf("TOPIC=%.*s\r\n", event->topic_len, event->topic);
 
-        if (memcmp(event->topic, BeepTopic, event->data_len) == 0)
+        if (memcmp(event->topic, MqttConfig.SubscribeTopics.Signal, event->data_len) == 0)
         {
-            printf("Beep Duration=%.*s milliseconds\r\n", event->data_len, event->data);
-
             if (_xSemaphore == NULL)
                 break;
 
@@ -157,7 +158,7 @@ void Mqtt_PublishValues(uint32_t stamp, float temperature, float humidity, float
     // ESP_LOGI(TAG, "Data: %s", rendered);
 
     char topicBuf[288];
-    sprintf(topicBuf, "%s%s", MqttConfig.Topics.Root, "AllData");
+    sprintf(topicBuf, "%s%s", MqttConfig.PublishTopics.Root, "AllData");
 
     if (esp_mqtt_client_publish(_client, topicBuf, rendered, 0, 1, 0) == -1)
         ESP_LOGW(TAG, "Sending of 'AllData' failed");
@@ -173,7 +174,7 @@ void Mqtt_PublishTemperature(float temperature)
         return;
 
     char topicBuf[320]; // todo dependant on definition
-    sprintf(topicBuf, "%s%s", MqttConfig.Topics.Root, MqttConfig.Topics.Temperature);
+    sprintf(topicBuf, "%s%s", MqttConfig.PublishTopics.Root, MqttConfig.PublishTopics.Temperature);
     char valueBuffer[32];
     sprintf(valueBuffer, "%.2f", temperature);
 
@@ -190,7 +191,7 @@ void Mqtt_PublishHumidity(float humidity)
         return;
 
     char topicBuf[320]; // todo dependant on definition
-    sprintf(topicBuf, "%s%s", MqttConfig.Topics.Root, MqttConfig.Topics.Humidity);
+    sprintf(topicBuf, "%s%s", MqttConfig.PublishTopics.Root, MqttConfig.PublishTopics.Humidity);
     char valueBuffer[32];
     sprintf(valueBuffer, "%.2f", humidity);
 
@@ -207,7 +208,7 @@ void Mqtt_PublishDoor(int doorOpen)
         return;
 
     char topicBuf[320]; // todo dependant on definition
-    sprintf(topicBuf, "%s%s", MqttConfig.Topics.Root, MqttConfig.Topics.Door);
+    sprintf(topicBuf, "%s%s", MqttConfig.PublishTopics.Root, MqttConfig.PublishTopics.Door);
     char valueBuffer[32];
     sprintf(valueBuffer, "%d", doorOpen);
 

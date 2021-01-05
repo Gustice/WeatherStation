@@ -84,7 +84,7 @@ void waitForConfigurationThenRestart(void)
     memcpy(stationCfg.ssid, StdStationSsid, strlen(StdStationSsid));
     memcpy(stationCfg.password, StdStationPw, strlen(StdStationPw));
     ESP_ERROR_CHECK(Wifi_Connect(InitAsAp, &stationCfg ));
-    start_webserver(); 
+    Web_StartWebserver(&devCfg, &mqttCfg); 
     while (true) // @todo Semaphore for Reset
     {
         vTaskDelay(2000 / portTICK_RATE_MS);
@@ -119,6 +119,9 @@ void app_main()
     esp_log_level_set("TRANSPORT", ESP_LOG_VERBOSE);
     esp_log_level_set("OUTBOX", ESP_LOG_VERBOSE);
 
+    memcpy(&devCfg, &DefaultDeviceConfig, sizeof(DeviceConfig_t));
+    memcpy(&mqttCfg, &DefaultMqttConfig, sizeof(MqttConfig_t));
+
     ESP_ERROR_CHECK(nvs_flash_init());
     ESP_ERROR_CHECK(esp_netif_init());
     // ESP_ERROR_CHECK(esp_event_loop_create_default());
@@ -142,13 +145,16 @@ void app_main()
 
     Fs_ReadEntry(wifiCfgFile, (void *)&wifiCfg, sizeof(WifiConfig_t) );
     ESP_ERROR_CHECK(Wifi_Connect(ConnectToAp, &wifiCfg));
-    start_webserver(); 
+    Web_StartWebserver(&devCfg, &mqttCfg); 
 
     if (Fs_CheckIfExists(mqttCfgFile) != ESP_OK)
         waitForDeviceSetting();
 
     Fs_ReadEntry(mqttCfgFile, (void *)&mqttCfg, sizeof(MqttConfig_t) );
     xSemaphore = xSemaphoreCreateBinary();
+
+    if (Fs_CheckIfExists(devCfgFile) == ESP_OK)
+        Fs_ReadEntry(devCfgFile, (void *)&devCfg, sizeof(DeviceConfig_t) );
 
     ESP_LOGI(TAG, "Setup Hardware");
     I2cPort sensPort; // Note: static is somehow not allowed here ?!?
