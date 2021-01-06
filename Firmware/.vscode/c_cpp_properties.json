@@ -8,7 +8,8 @@
                 "${workspaceRoot}/main/**",
                 "${workspaceRoot}/components/**", // comes in handy when first components are created
                 "${env:IDF_PATH}/components/**",
-                //"${workspaceRoot}/build/include" // After first build, this contains configured defines.
+                "${IDF_PATH}/components/freertos/port/esp8266/include", // to solve the ambiguous includes ##include "freertos.."'
+                "${workspaceRoot}/build/config" // After first build, this contains configured defines.
             ],
             "defines": [
                 "NDEBUG", "__BSD_VISIBLE",

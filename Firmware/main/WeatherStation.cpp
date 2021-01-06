@@ -31,9 +31,9 @@
 #include "I2cPort.h"
 #include "SpiPort.h"
 #include "Shtc3_Sensor.h"
-#include "Display_SSD1306.h"
+// #include "Display_SSD1306.h"
 #include "GpioPort.h"
-#include "MyDisplay.h"
+// #include "MyDisplay.h"
 #include "ParamRepo.h"
 
 static const char *TAG = "main";
@@ -168,10 +168,10 @@ void app_main()
     ESP_LOGD(TAG, "Setup Sensor");
     Shtc3_Sensor tempSens(&sensPort);
     ESP_LOGD(TAG, "Setup Display");
-    SSD1306 displayDriver(&displayPort, &dispDc, &dispRst);
+    // SSD1306 displayDriver(&displayPort, &dispDc, &dispRst);
     ESP_LOGD(TAG, "Setup Ui");
-    MyDisplay displayUi(&displayDriver);
-    displayUi.PrintInitFrame(true,true,0.5f);
+    // MyDisplay displayUi(&displayDriver);
+    // displayUi.PrintInitFrame(true,true,0.5f);
 
     ESP_LOGD(TAG, "Reading Sensor ID");
     uint16_t sensId; 
@@ -203,12 +203,12 @@ void app_main()
         
         if ( ret != ESP_OK)
         {
-            displayUi.PrintLogLine(line);
+            // displayUi.PrintLogLine(line);
             ESP_LOGW(TAG, "Sensor-read failed");
         }
         else
         {
-            displayUi.PrintLogLine(line);
+            // displayUi.PrintLogLine(line);
             ESP_LOGI(TAG, "T=%d / H=%d", (uint32_t)temp, (uint32_t)hum);
             Mqtt_PublishValues(cycleStamp, temp, 0.5f, 0, doorOpen);
             Mqtt_PublishTemperature(temp);
